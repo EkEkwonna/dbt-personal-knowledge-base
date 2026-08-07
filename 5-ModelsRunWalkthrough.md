@@ -272,4 +272,48 @@ This will reference the staging models in the final model.
 
 ### Running Jobs based on dependencies
 
-To run only specific
+To run every upstream model before a model you can select : 
+* Toggle next to Build symbol 
+* ```Run +model (Upstream)```
+
+This ensures all the dependencies prior to the model are executed as well. 
+
+note command line syntax : 
+
+~~~~bash
+dbt run --select +customers
+~~~~
+
+---
+
+### Model Naming Conventions 
+
+#### Sources 
+
+- Tables of raw data loaded into platform 
+- Data should be loaded automatically or scheduled 
+- Data Engineers are responsible for orchestrating loading process
+
+#### Staging 
+
+- Staging models are built 1:1 with the source
+- For each Source Table there should be a source table 
+- Make data look the way we wished it came in the data platform 
+- Renaming, Restructuring data types , Currency conversions, 
+
+#### Intermediate 
+
+- Intermediate models are were joins and aggregations take place according to business need
+- Bridges raw data and final reporting tables (facts & dimensions tables)
+
+
+
+Fact tables 
+
+Dimension tables
+
+---
+
+
+
+
