@@ -148,5 +148,128 @@ dbt run --select my_first_dbt_model
 
 Type the name of the projects in the search and Update Graph
 
+---
+
+## Modularity
+
+The concept of Modularity is breaking down data models into distinct re-usable building blocks (semantic pieces)
+
+We can BREAK down the ```customers.sql``` into several CTEs. 
+
+In a scenario where want to use the```customers``` (belonging to the ```customers.sql```) 
+
+~~~~sql
+-- ...
+with customers as (
+
+    select
+        id as customer_id,
+        first_name,
+        last_name
+
+    from raw.jaffle_shop.customers
+)
+-- ...
+~~~~
+
+instead of copying this down into another large SQL model we can break this down and form the dependency
+
+We can take the logic out of the ```customers.sql``` and make it it's own model 
+
+---
+
+## Staging 
+
+Note: dbt Naming conventions suggest that if producing a 1-1 model with source [schema].[object_name] becomes [schema]__[object] 
+("_" underscore to replace ".")
 
 
+By creating the following staging models :
+
+
+**stg_jaffle_shop__customers.sql**
+
+~~~sql
+select
+    id as customer_id,
+    first_name,
+    last_name
+
+from raw.jaffle_shop.customers
+~~~
+
+**stg_jaffle_shop__orders.sql**
+
+~~~~sql
+select
+    id as order_id,
+    user_id as customer_id,
+    order_date,
+    status
+
+from raw.jaffle_shop.orders
+~~~~
+
+To reference the staging models in a separate model we use the ```__ref``` function in the dbt sql script
+
+i.e. the customers.sql script becomes 
+
+~~~~sql 
+
+with customers as (
+
+select * from {{ ref('stg_jaffle_shop__customers')}}
+
+),
+
+orders as (
+
+select * from {{ref('stg_jaffle_shop__orders')}}
+
+),
+
+customer_orders as (
+
+    select
+        customer_id,
+
+        min(order_date) as first_order_date,
+        max(order_date) as most_recent_order_date,
+        count(order_id) as number_of_orders
+
+    from orders
+
+    group by 1
+
+),
+
+
+final as (
+
+    select
+        customers.customer_id,
+        customers.first_name,
+        customers.last_name,
+        customer_orders.first_order_date,
+        customer_orders.most_recent_order_date,
+        coalesce(customer_orders.number_of_orders, 0) as number_of_orders
+
+    from customers
+
+    left join customer_orders using (customer_id)
+
+)
+
+select * from final
+~~~~
+
+This will reference the staging models in the final model. 
+
+![](dbtLineageCustomerModel.png)
+
+
+---
+
+### Running Jobs based on dependencies
+
+To run only specific
