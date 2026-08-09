@@ -578,6 +578,20 @@ With a Lineage that looks as such :
 * [Subqueries and CTEs](https://medium.com/@datainsights17/subqueries-and-ctes-in-sql-aa1ff4b17686)
 
 
+### SQL Query Anatomy 
+
+The query order of execution goes : 
+
+| ORDER | CLAUSE | Function |
+| :--- | :--- | :--- |
+| 1 | WITH , JOIN , FROM | Constructs base data set| 
+| 2 | WHERE | Filters base data | 
+| 3 | GROUP BY | Aggregates base data |
+| 4 | HAVING | Filters aggregated data |
+| 5 | SELECT | Returns Final data |
+| 6 | DISTINCT | Removes duplicate rows |
+| 7 | ORDER BY | Sorts data |
+| 8 | LIMITS | Limits by row count |
 
 
 
