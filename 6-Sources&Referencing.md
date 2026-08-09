@@ -104,3 +104,123 @@ sources:
 
 Note: that if database and schema details are not udpated dbt will assume the same schema as the name
 
+---
+
+Once the source files have been set up. 
+We can connect the source files in the models by using `Jinja` to : 
+
+* `raw.jaffle_shop.orders`  &rarr; `{{source('jaffle_shop','orders')}}`
+
+**stg_jaffle_shop_orders**
+~~~~sql
+    select 
+        id as order_id,
+        user_id as customer_id,
+        order_date,
+        status
+
+    from {{source('jaffle_shop','orders')}}
+~~~~
+
+Note: `Jinja` uses the source name and table name (from the `.yml` file) 
+
+The Lineage should update as such: 
+
+![](stg_ordersLineage.png)
+
+Also it is best practice to have 1 staging model for each source. 
+
+When clicking the `compile` (`</>` Item) we can see the compiled (with the referenced table)
+
+---
+
+### Maintanable 
+
+This means that for any future migrations going forward we would ONLY have to upate the `.yaml` file to update any reference objects
+
+---
+
+## Source Freshness
+
+This allows us to ensure raw data in sources is new. (We can define how fresh we want the data to be at any one time) 
+
+dbt will check this to let us know if data is getting old 
+
+
+In `_src_jaffle_shop.yml` by adding a `config` and a `__freshness` we can update the `.yml` as such 
+
+*_src_jaffle_shop.yml**
+~~~~yml
+sources:
+  - name: jaffle_shop
+    database: raw
+    schema: jaffle_shop
+    tables:
+      - name: customers
+      - name: orders
+        config:
+          freshness:
+            warn_after:
+              count: 6
+              period: hour
+            error_after:
+              count: 12
+              period: hour
+            loaded_at_field: etl_loaded_at
+~~~~
+
+^ This will test the freshness of the table and provide an alert/error accordingly 
+
+By running 
+
+~~~bash 
+dbt source freshness
+~~~
+
+Error logs 
+**WARNING**
+~~~~log
+13:50:06 Started source jaffle_shop.orders (external)
+13:50:07 Stale [0.0s] source jaffle_shop.orders (external) (last updated 5 days 11h 27m 42s ago)
+~~~~
+
+**WARNING**
+~~~~log
+14:23:47 Warned [0.0s] source jaffle_shop.orders (external) (last updated 5 days 12h 1m 22s ago)
+~~~~
+
+We can see the **Stale** or **Warning** message 
+
+---
+
+We can also apply this at Schema level: 
+
+*_src_jaffle_shop.yml**
+~~~~yml
+sources:
+  - name: jaffle_shop
+    database: raw
+    schema: jaffle_shop
+    config:
+      freshness:
+        warn_after:
+          count: 21
+          period: day
+        error_after:
+          count: 22
+          period: day
+      loaded_at_field: etl_loaded_at
+    tables:
+      - name: customers
+        config:
+          freshness: null
+      - name: orders
+
+~~~~
+
+NOTE `customers` table doesn't contain an `etl_loaded_at` field hence freshness is udpated to null
+
+
+---
+
+
