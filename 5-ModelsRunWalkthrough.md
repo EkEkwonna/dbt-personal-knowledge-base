@@ -314,6 +314,72 @@ Dimension tables
 
 ---
 
+## Cleaning and Reorganizing 
+
+We can Remove the ```models/example``` folder as it's custom default folder 
+
+The folder structure can be udpated to reflect the following : 
+
+~~~~
+models
+    ├── marts
+    │   └── dim_customers.sql
+    └── staging
+        ├── stg_jaffle_shop__orders.sql
+        └── stg_jaffle_shop__customers.sql
+~~~~
+
+
+## Materialization strategies 
+
+To follow best practices when it comes to materialisation we must update the ```dbt_project.yml``` file . 
+
+1. Rename the project
+2. Update the models project name 
+3. Provide provide default materialisation
+
+**dbt_project.yml**
+~~~~yml 
+name: 'dbt_jaffle_shop_project'
+
+# ...
+models:
+    dbt_jaffle_shop_project:
+        staging:
+            +matarialized: view
+        marts:
+            +materialized: table
+
+~~~~
+
+This ensures whenever a model is ran inside the staging folder (where the object type is not defined) a view is created for Staging and a table is set up for Marts. 
+
+Note: Marts are typically downstream tables. 
+
+When a mart is queried if it was a view and depending on other views, every view dependency is executed every time the mart view model is ran
+
+---
+
+It's also good practice to break down the sub levels of staging down by different sources. 
+
+i.e. right now we have 1 source system 'Jaffle Shop' so we can add this as a sub folder for staging. 
+
+~~~~
+models
+    ├── marts
+    │   └── marketing
+    │       └── dim_customers.sql
+    └── staging
+        └── jaffle_shop
+            ├── stg_jaffle_shop__orders.sql
+            └── stg_jaffle_shop__customers.sql
+~~~~
+
+
+Marts we can also break down based on which teams are consuming the necessary data (so marts may also have subfolders like 'Finance', 'Accounting', 'Marketing' etc. )
+
+
+---
 
 
 
