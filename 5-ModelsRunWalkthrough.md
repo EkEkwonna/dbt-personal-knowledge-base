@@ -412,9 +412,9 @@ Hint: The sum of lifetime_value is $1,672
 * Inspect ```raw.stripe.payment```
 * Create a ```stg_stripe__payments.sql``` model in `models/staging/stripe`
 * Create a `fct_orders.sql` (not stg_orders) model with the following fields. Place this in the `marts/finance` directory:
-* order_id
-* customer_id
-* amount (hint: this has to come from payments)
+  * order_id
+  * customer_id
+  * amount (hint: this has to come from payments)
 
 
 #### Refactor your dim_customers Model
@@ -429,10 +429,147 @@ Hint: The sum of lifetime_value is $1,672
 
 When investigating the ```raw.stripe.payment``` I came accross the following fields : 
 
-| id| orderid | statusHeader 3 |
-| :--- | :---: | ---: |
-| Left aligned | Centered | Right aligned |
-| Cell 1 | Cell 2 | Cell 3 |
+| id| orderid | status | amoung | created |
+| :--- | :--- | :--- | :--- | :--- | 
+| 1 | 1| Success | 10000 | 2018-01-01 |
+| 2 | 2| Success | 20000 | 2018-01-02 |
+| 3 | 3| Success | 100 | 2018-01-04 |
+| 4 | 4| Fail | 1700 | 2018-01-05 |
+| 5 | 4| Success | 1700 | 2018-01-05 |
+
+
+When staging consider the correct business terms for the staging table that will aid the pipeline going downstream. 
+
+We rename the columns so every column name to be intuitive : 
+
+**stg_stripe__payments.sql**
+~~~~sql
+
+with 
+
+source as (
+
+    select * from raw.stripe.payments
+
+),
+
+renamed as (
+
+    select
+        id as payment_id,
+        orderid as order_id,
+        paymentmethod as payment_method,
+        status as payment_status,
+        amount as payment_amount,
+        created as payment_created,
+        _batched_at
+
+    from source
+
+)
+
+select * from renamed
+~~~~
+
+As the `fct_orders.sql` needs to incorporate the payment we need to consider the status (success/failed) 
+
+To make things easier a defined CTE for each successful order's payment is incorporated in the fact 
+
+**order_payments CTE**
+~~~~sql
+order_payments as (
+    select
+        order_id,
+        sum (case when payment_status = 'success' then payment_amount end) as amount
+
+    from payments
+    group by 1
+~~~~
+ so that 
+
+**fct_orders**
+
+~~~~sql
+with orders as  (
+    select * from {{ ref ('stg_jaffle_shop__orders' )}}
+),
+
+payments as (
+    select * from {{ ref ('stg_stripe__payments') }}
+),
+
+order_payments as (
+    select
+        order_id,
+        sum (case when payment_status = 'success' then payment_amount end) as amount
+
+    from payments
+    group by 1
+),
+
+ final as (
+
+    select
+        orders.order_id,
+        orders.customer_id,
+        orders.order_date,
+        coalesce (order_payments.amount, 0) as amount
+
+    from orders
+    left join order_payments using (order_id)
+)
+
+select * from final
+~~~~
+
+Note the renaming of columns allows us to keep consisency with joings and the `final` CTE
+
+
+orders fact table can now be utilised for the dimension `dim_customer.sql` 
+
+~~~~sql
+
+--customer_id, first_name,last_name
+with customers as (
+
+     select * from {{ ref('stg_jaffle_shop__customers') }}
+
+),
+-- order_id, customer_id, order_date,status 
+orders as ( 
+
+    select * from {{ ref('fct_orders') }}
+
+),customer_orders as (
+    select
+        customer_id,
+        min (order_date) as first_order_date,
+        max (order_date) as most_recent_order_date,
+        count(order_id) as number_of_orders,
+        sum(amount) as lifetime_value
+    from orders
+    group by 1
+),
+ final as (
+    select
+        customers.customer_id,
+        customers.first_name,
+        customers.last_name,
+        customer_orders.first_order_date,
+        customer_orders.most_recent_order_date,
+        coalesce (customer_orders.number_of_orders, 0) as number_of_orders,
+        customer_orders.lifetime_value
+    from customers
+    left join customer_orders using (customer_id)
+)
+select * from final
+~~~~
+
+With a Lineage that looks as such : 
+
+![](dimCustomerLineage.png)
+
+
 
 
 
