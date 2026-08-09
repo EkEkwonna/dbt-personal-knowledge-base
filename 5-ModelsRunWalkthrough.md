@@ -570,6 +570,15 @@ With a Lineage that looks as such :
 ![](dimCustomerLineage.png)
 
 
+#### Useful Resources 
+
+* [dbt Commants](https://docs.getdbt.com/category/list-of-commands?version=2.0)
+* [Syntax Overviews](https://docs.getdbt.com/reference/node-selection/syntax?version=2.0)
+* [SQL Query Anatomy](https://medium.com/@lomso.dzingwa/the-anatomy-of-a-sql-query-189dd0664851)
+* [Subqueries and CTEs](https://medium.com/@datainsights17/subqueries-and-ctes-in-sql-aa1ff4b17686)
+
+
+
 
 
 
