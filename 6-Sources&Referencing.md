@@ -223,4 +223,59 @@ NOTE `customers` table doesn't contain an `etl_loaded_at` field hence freshness 
 
 ---
 
+## Using Codegen package 
 
+To configure and reference several objects in the data warehouse into our `.yml` 
+
+The codegen package can be installed from the [dbt Hub](http://hub.getdbt.com/) 
+
+By following the instruction in the [Codegen Package](https://hub.getdbt.com/dbt-labs/codegen/latest/) site
+
+We can see that we need to create a `.yml` in the project folder with the following : 
+
+~~~~yml
+packages:
+  - package: dbt-labs/codegen
+    version: 0.14.1
+~~~~
+
+(Ensuring we have dbt version between `1.1.0` and `3.0.0`) 
+
+Run the following to install the package
+
+~~~~bash 
+dbt deps
+~~~~
+
+This will allow us to use the new macro to install. Now we can use a macro to generate all the sources. 
+
+In the usage section we can see a line to print all the sources. 
+
+We can run this in a new file to compile a list of all the objects linked to the source provided
+
+~~~~
+{{ codegen.generate_source(schema_name= 'jaffle_shop', database_name= 'raw') }}
+~~~~
+
+`Compile` returns 
+
+~~~~yml
+version: 2
+
+sources:
+  - name: jaffle_shop
+    database: raw
+    tables:
+      - name: customers
+      - name: orders
+~~~~
+
+This will provide all the sources that we have in our warehouse for the specified `raw` database and `jaffle_shop` schema 
+
+We can save this in a new yml file and store this as our `_src_jaffle_shop.yml` file 
+
+---
+
+## Generating Staging models
+
+Using Code
