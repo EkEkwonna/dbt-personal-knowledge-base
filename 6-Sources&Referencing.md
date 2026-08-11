@@ -278,4 +278,19 @@ We can save this in a new yml file and store this as our `_src_jaffle_shop.yml` 
 
 ## Generating Staging models
 
-Using Code
+Once you have the `.yml` copied from the COMPILED code from codegen. We can generate the staging models by reveiwing the `.yml`
+
+Above each object we should have the option to generate a staging model
+
+![](GenerateStagingModel.png)
+
+By default it will import a CTE and rename the metrics which can be modified accordingly. 
+
+We can now refine the staging models with : 
+1. Renaming Columns 
+2. Filtering Rows (removing irrelevant/invalid records)
+3. Type casting (Converting data types for consistency)
+4. Basic Computations (Converting pennies(p) to pounds(£))
+5. Basic Date Transformations
+
+Dbt also provides a [Style Guide](https://docs.getdbt.com/best-practices/how-we-style/1-how-we-style-our-dbt-models) for additional support
