@@ -294,3 +294,31 @@ We can now refine the staging models with :
 5. Basic Date Transformations
 
 Dbt also provides a [Style Guide](https://docs.getdbt.com/best-practices/how-we-style/1-how-we-style-our-dbt-models) for additional support
+
+i.e. the customer staging model then becoems 
+
+~~~~sql 
+with 
+
+source as (
+
+    select * from {{ source('jaffle_shop', 'orders') }}
+
+),
+
+renamed as (
+
+    select
+        id as order_id,
+        user_id as customer_id,
+        order_date,
+        status as order_status,
+        etl_loaded_at
+
+    from source
+
+)
+
+select * from renamed
+
+~~~~
