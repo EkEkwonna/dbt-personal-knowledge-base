@@ -48,6 +48,63 @@ If this returns an output we know we have failed the duplicates test and an aler
 
 [Package Hub](hub.getdbt.com) contains a `dbt_utils` package which contains SQL tests that have already been configured with dbt
 
+---
+
+## GENERIC TEST: UNIQUE & NOT NULL 
+
+set up a `.yml` similar to the `_src_` `.yml` but this time we set up a `_stg_` `.yml` for the model we are addressing 
+
+~~~~
+models
+    ├── marts
+    │   └── marketing
+    │       └── dim_customers.sql
+    └── staging
+        ├── jaffle_shop
+        │   ├── _src_jaffle_shop.yml
+        │   ├── _stg_jaffle_shop.yml*
+        │   ├── stg_jaffle_shop__orders.sql
+        │   └── stg_jaffle_shop__customers.sql
+        └── stripe
+            ├── _src_stripe.yml
+            └── stg_stripe_payments.sql
+~~~~
+
+Note the **`_stg_jaffle_shop.yml`** is new. 
+
+In this `.yml` we define the model, columns and tests accordingly 
+
+~~~~yml 
+models:
+  - name: stg_jaffle_shop___customers
+    columns:
+      - name: customer_id
+        data_tests:
+          - unique 
+          - not_null 
+
+  - name: stg_jaffle_shop__orderss
+    columns:
+      - name: order_id
+        data_tests:
+        - unique 
+        - not_null
+
+~~~~
+
+Note: the **renamed** staging model columns have been used to define the metrics in the `.yml`
+
+To run the testing we use 
+
+~~~bash 
+dbt test
+~~~
+
+![](dbtTest.png)
+
+This will go through our `.yml` and if successful returnt he following 
+
+![](TestUniqueSuccess.png)
 
 
 
