@@ -118,20 +118,41 @@ models:
 # -name: stg_jaffle_shop__customer
 #        ...
 
-  - name: stg_jaffle_shop__orderss
+  # - name: stg_jaffle_shop__orders
     columns:
-#     - name: customer_id
-#             ...
+      # - name: order_id
+          # ...
       - name: order_status
         data_tests:
-        - accepted_values: 
-          values: 
-            - completed 
-            - shipped
-            - placed 
-            - return_pending
-            - returned
+          - accepted_values:
+              arguments:
+                values:
+                - completed
+                - return_pending
+                - returned
+                - placed
+                - shipped
 
 ~~~~
+
+OR 
+
+~~~~yml
+      - name: order_status
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: ['completed','return_pending','returned','placed','shipped']
+
+~~~~
+
+We can specify our tests for specific models that we want to test 
+
+~~~~bash
+dbt test --select stg_jaffle_shop__orders
+~~~~
+
+This will only run the tests associated with `jaffle_shop__orders` model
+
 
 
