@@ -107,7 +107,31 @@ This will go through our `.yml` and if successful returnt he following
 ![](TestUniqueSuccess.png)
 
 
+---
 
+## GENERIC TEST: ACCEPTED VALUES 
 
+To set up a column to only contain specific values we use the following notation 
+
+~~~~yml
+models:
+# -name: stg_jaffle_shop__customer
+#        ...
+
+  - name: stg_jaffle_shop__orderss
+    columns:
+#     - name: customer_id
+#             ...
+      - name: order_status
+        data_tests:
+        - accepted_values: 
+          values: 
+            - completed 
+            - shipped
+            - placed 
+            - return_pending
+            - returned
+
+~~~~
 
 
