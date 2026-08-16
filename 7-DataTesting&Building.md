@@ -257,3 +257,70 @@ test-paths: ["tests"]
 ~~~
 
 ---
+
+## TESTING SOURCESS 
+
+We can test sources similarly. Review the `_src_` `.yml` files that were set up to configure the dbt sources. 
+
+Recall: **`_scr_jaffle_shop.yml`**
+~~~~yml
+sources:
+  - name: jaffle_shop
+    database: raw
+    schema: jaffle_shop
+    config:
+      freshness:
+        warn_after:
+          count: 21
+          period: day
+        error_after:
+          count: 22
+          period: day
+      loaded_at_field: etl_loaded_at
+    tables:
+      - name: customers
+        config:
+          freshness: null
+      - name: orders
+~~~~
+
+We can now add similar `unique` and `not_null` tests. 
+
+NOTE: we must reference the column AS IT APPEARS in the raw table. 
+
+~~~~yml
+sources:
+  - name: jaffle_shop
+    database: raw
+    schema: jaffle_shop
+    # ...
+    tables:
+      - name: customers
+        columns:
+          - name: id
+            data_tests:
+              - not_null
+              - unique
+        config:
+          freshness: null
+      - name: orders
+        columns:
+        - name: id
+          data_test:
+            - not_null
+            - unique
+~~~~
+
+REMEMBER: reference the metrics from the original data source. 
+
+Now to test just the ssource : 
+
+~~~~bash 
+dbt test --select source:jaffle_shop
+~~~~
+
+or to test all our sourcess 
+
+~~~~bash 
+dbt test --select source:*
+~~~~
