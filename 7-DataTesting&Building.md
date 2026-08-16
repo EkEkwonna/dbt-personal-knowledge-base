@@ -200,7 +200,7 @@ Reviewing the **stg_stripe_payments** model we can see there are rows for the sa
 
 
 
-| payment_id| order_id | payment_method| status| amount |
+| payment_id| order_id | payment_method| status| payment_amount |
 | :--- | :--- | :--- | :--- | :--- | 
 | 1 | 1| credit_card | Success | 10000 | 
 | 2 | 2| bank_transfer | Success | 20000 | 
@@ -241,10 +241,19 @@ In the example where we want the sum of amount to be less than 0 we want to test
 **assert_stg_stripe__payments_total_positive.sql**
 ~~~~sql 
 select 
-  order_id, sum(amount)
-from {{ref('stg_stripe__payments')}}
+    order_id, 
+    sum(payment_amount)
+from {{ ref('stg_stripe__payments') }}
 group by order_id
-having sum(amount) < 0 
+having sum(payment_amount) < 0 
 ~~~~
 
-To add this test to the 
+*Note: we renamed `amount` as `payment_amount` in the staging model so will need to referene the renamed metric. 
+
+any models in the test directory should run as they've been referenced in the `dbt_project.yml' using 
+
+~~~yml 
+test-paths: ["tests"]
+~~~
+
+---
