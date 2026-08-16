@@ -155,4 +155,36 @@ dbt test --select stg_jaffle_shop__orders
 This will only run the tests associated with `jaffle_shop__orders` model
 
 
+---
+
+## GENERIC TEST: RELATIONSHIP TESTS
+
+Use to validate every customer ID key in the `orders` model can be associated with the `customer_id` from `customers` model. We can reference with the following: 
+
+~~~~yml
+models:
+- name: stg_jaffle_shop__customers
+  columns:
+    - name: customer_id
+      data_tests:
+        - not_null
+        - unique
+#        ...
+- name: stg_jaffle_shop__orders
+  columns:
+      # - name: order_id
+      # - name: order_status
+      - name: customer_id
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('stg_jaffle_shop__customers')
+                field: customer_id
+
+~~~~
+
+Note: dbt update notes now requires usse of `arguements` before the `field` and `to` parameters.
+
+## SINGULAR TESTS : 
+
 
