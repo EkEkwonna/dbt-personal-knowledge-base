@@ -113,6 +113,7 @@ This will go through our `.yml` and if successful returnt he following
 
 To set up a column to only contain specific values we use the following notation 
 
+ **`_stg_jaffle_shop.yml`** 
 ~~~~yml
 models:
 # -name: stg_jaffle_shop__customer
@@ -161,6 +162,7 @@ This will only run the tests associated with `jaffle_shop__orders` model
 
 Use to validate every customer ID key in the `orders` model can be associated with the `customer_id` from `customers` model. We can reference with the following: 
 
+ **`_stg_jaffle_shop.yml`** 
 ~~~~yml
 models:
 - name: stg_jaffle_shop__customers
@@ -185,6 +187,64 @@ models:
 
 Note: dbt update notes now requires usse of `arguements` before the `field` and `to` parameters.
 
-## SINGULAR TESTS : 
+## SINGULAR TESTS
+
+For singular tests remember the `dbt test` command: <br>
+! **FAILS** ! if query returns any rows
+
+So our goal is to create a query that **VIOLATES** our understanding. 
+
+---
+
+Reviewing the **stg_stripe_payments** model we can see there are rows for the same `order_id` where 2 succesful payments add to a specific total . 
 
 
+
+| payment_id| order_id | payment_method| status| amount |
+| :--- | :--- | :--- | :--- | :--- | 
+| 1 | 1| credit_card | Success | 10000 | 
+| 2 | 2| bank_transfer | Success | 20000 | 
+| 3 | 3| coupon| Success | 100 | 
+| 4 | 4| bank_transfer | Fail | 1700 | 
+| 5 | 4| bank_transfer | Success | 1700 | 
+| 6 | 5| bank_transfer | Success | 20000 | 
+| 7 | 6| credit_card | Success | 100 | 
+| 8 | 7| credit_card | Fail | 1700 | 
+| 9 | 7| bank_transfer | Success | 1700 | 
+| 10 | 7| bank_transfer | Success | 20000 | 
+| 11 | 8| credit_card | Success | 100 | 
+| 12 | 9| coupon | Fail | 1700 | 
+| 13 | 10| bank_transfer | Success | 1700 | 
+
+For examples `order_id` : ( 7 ,4 )
+
+We can see several transactions wen through to add to a particular total. We want to ensure the sum of all payments for an order is not negative. 
+
+To set up the generic tesst we first need tos et up a `.sql` file for our test. 
+
+in the test directory : 
+
+~~~~
+├── models
+│   ├── marts/
+│   └── staging/
+│       ├── jaffle_shop/
+│       └── stripe/
+└── test/
+    └── *assert_stg_stripe__payments_total_positive.sql
+~~~~
+
+Ensure the title is clear on what the file will include. 
+
+In the example where we want the sum of amount to be less than 0 we want to test for negative total amounts : 
+
+**assert_stg_stripe__payments_total_positive.sql**
+~~~~sql 
+select 
+  order_id, sum(amount)
+from {{ref('stg_stripe__payments')}}
+group by order_id
+having sum(amount) < 0 
+~~~~
+
+To add this test to the 
