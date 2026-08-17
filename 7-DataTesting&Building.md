@@ -344,5 +344,53 @@ This will analyse the models and generate the `.yml` code for you
 
 Note : Always remember to inspect and check the work produced. Also review the location of generated code to ensure it's configured in the correct directory 
 
+The dbt function 
+
+~~~~bash 
+dbt build
+~~~~
+
+is a combination of 
+
+~~~~bash
+dbt test
+~~~~
+
+AND 
+
+~~~~bash 
+dbt run 
+~~~~
+
+**BUILD** essentially runs all the tests and runs models in DAG order
+
 --- 
+
+## DBT BUILD COMMAND 
+
+Dbt **BUILD** allows for a layered approach to quality control. 
+
+1. Testing the Sources 
+2. First layer of our models (i.e staging models)
+3. Immediately tests the staging models associated with the first layer of models
+4. Repeats downstream for any models depending on the first layer of staging models . 
+
+If at any point there's a failure the build process stops completely.
+
+---
+
+Other dbt commands 
+
+
+~~~~bash 
+dbt seed
+~~~~
+Loads CSV data into your warehouse tables 
+
+~~~~bash
+dbt snapshot
+~~~~
+Tracks slowly changing dimensions in your data
+
+
 
