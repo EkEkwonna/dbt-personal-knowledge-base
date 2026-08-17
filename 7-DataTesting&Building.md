@@ -324,3 +324,25 @@ or to test all our sourcess
 ~~~~bash 
 dbt test --select source:*
 ~~~~
+
+---
+
+Testing Data and Model Integrity
+
+* Test sources to validate the quality of raw data 
+* Test models to validate the transformations of the business logic applied 
+
+---
+
+## USING DBT COPILOT TO GENERATE DATA TESTS
+
+First check Account Settings to enable AI and dbt Copilot 
+
+When you select a model you now shoul have the option `dbt Copilot` and `Generic tests`
+
+This will analyse the models and generate the `.yml` code for you
+
+Note : Always remember to inspect and check the work produced. Also review the location of generated code to ensure it's configured in the correct directory 
+
+--- 
+
