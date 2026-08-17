@@ -413,3 +413,4 @@ If a test fails for the `stg_jaffle_shop__orders` model dbt will stop the build 
 We can see the test associated with `stg_jaffle_shop__orders` failed and thus we have : 
 
 ![](dbtSkipDependencies.png)
+
