@@ -393,4 +393,23 @@ dbt snapshot
 Tracks slowly changing dimensions in your data
 
 
+---
 
+Clonsider the following Lineage graph : 
+
+![](dimCustomerLineage.png)
+
+
+Even when building upstream using 
+
+~~~~bash 
+dbt build --select +dim_customers
+~~~~
+
+If a test fails for the `stg_jaffle_shop__orders` model dbt will stop the build process as the model has dependency down the lines and `SKIP` all models and tests from `stg_jaffle_shop__orders` 
+
+![](dbtFailedTest.png)
+
+We can see the test associated with `stg_jaffle_shop__orders` failed and thus we have : 
+
+![](dbtSkipDependencies.png)
