@@ -93,3 +93,29 @@ models:
 
 ---
 
+It is good best practice to define raw data sources and clarifying ambigious columns and metrics. 
+
+**_src_jaffle_shop.yml**
+~~~~yml 
+
+sources:
+  - name: jaffle_shop
+    database: raw
+    schema: jaffle_shop
+    description: A clone of a Postgres application database
+    # config: ...
+    tables:
+      - name: customers
+        description : Raw customer
+        columns:
+        - name : id
+          description: Primary key for our customers data
+      - name: orders
+        description : Raw orders data
+        columns:
+          name: id
+          description : Primary key for order data
+
+~~~~
+
+Note when documenting any metrics from the source ensure the column names are associated with the raw data metrics
