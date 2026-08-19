@@ -106,7 +106,7 @@ sources:
     # config: ...
     tables:
       - name: customers
-        description : Raw customer
+        description : Raw customer datga
         columns:
         - name : id
           description: Primary key for our customers data
@@ -118,4 +118,21 @@ sources:
 
 ~~~~
 
-Note when documenting any metrics from the source ensure the column names are associated with the raw data metrics
+Note when documenting any metrics from the source ensure the column names are associated with the raw data columns
+
+---
+
+If using DBT Copilot to generate documentation. Remember to always review the results. 
+
+You can request Dbt Copilot to `generate documentation` this will udpate the description to the `.yml` files associated with the sources and models. 
+
+NOTE: ALWAYS REVIEW THE PROVIDED DESCRIPTIONS PROVIDED BY COPILOT 
+
+Copilot is a good tool for starting off. 
+
+Copilot will also carry over all the column names so there's no need to investigate and add them to the `.yml` one by one 
+
+
+---
+
+### Merging to Main
