@@ -149,3 +149,72 @@ Before merging any brances to main it's good practice to perform a final check t
 Once tested and satisfied, you can `Merge to Main branch` domain
 
 ---
+
+# Deployment
+
+We use the main branch for building models. 
+Use Development models to test and develop the next set of models. Once Deployed and merged to Main the model should update the next schedueled run. 
+
+---
+
+### Set up a Deployment Environment 
+
+2 Different Type of Environments : 
+
+1. Development Environment Type <br>(you can only have one) 
+2. Deployment Environment Type <br>There are different types of deployment types (General, Staging, Production)
+
+
+You can specify which branch to run projects in the Environment. (Default is main)
+
+We can set up the Connection from the established connections.
+
+We can assign a profile using key value pairs. 
+
+(Review `ConfigureSnowflake2dbt.md` for details on assigning publick rsa keys to profiles to embed the connection)
+
+***NOTE*** : When deploying a real dbt Project, you should set up a separate data warehouse account for this run. This should not be the same account that you personally use in development.
+
+***IMPORTANT*** : The schema used in production should be different from anyone's development schema.
+
+---
+
+### Schedule a job on dbt 
+
+In the example we want to build a daily build on the entire model 
+
+![](dimCustomerLineage.png)
+
+We can `deploy a job` associated to the `Production` environment
+
+* Select `Run source freshness`
+* Specify the models we want to run using dbt commands to build the whole project regularly with the command: 
+
+~~~~bash 
+dbt build
+~~~~
+
+Execution Settings 
+
+We can schedule the run indicating **Intervals**/**Specific Time** or [**Cron schedule**](https://crontab.guru)
+
+We can also trigger the job using **Job Completion**
+(i.e. when a separate job has been successfully completed or failed )
+
+![](SuccessfulJobRun.png)
+
+We can also review the model Timings : 
+
+![](ModelTimings.png)
+
+And if necessary we can `rerun` from  the start of the job or a point of failure. 
+
+---
+
+### dbt Catalog 
+
+This allows us to dive into the metadata and details behind the Project. 
+
+Model details, Lineage, Test details and recommendations. We can assess the recommendations that are inbuilt with dbt. 
+
+dbt Catalog also provides metrics on Model Run times and Model usage across the project. 
