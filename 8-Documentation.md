@@ -136,3 +136,16 @@ Copilot will also carry over all the column names so there's no need to investig
 ---
 
 ### Merging to Main
+
+Before merging any brances to main it's good practice to perform a final check to ensure the branch is polished. We do this with the following : 
+
+1. Sources are configured `_scr_[project].yml` files 
+2. Written descriptions for our sources, models and columns (provided in the `_stg_[project].yml`)
+3. these should include `descriptions` and `data_tests`
+4. Staging Models refactores with an import CTE (from the source) 
+5. Models located in appropriate folder (i.e. `marts/[sub_group_directory]`
+6. Models configures with `.yml` for added testing and descriptions
+
+Once tested and satisfied, you can `Merge to Main branch` domain
+
+---
