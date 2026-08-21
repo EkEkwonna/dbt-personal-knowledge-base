@@ -3,18 +3,18 @@
 A comprehensive reference guide covering core dbt concepts, DAG design principles, staging conventions, automated testing, and documentation best practices.
 
 ## Table of Contents
-- [1.Snowflake Setup](#1.Snowflake-Setup)
-- [2.Connecting dbt to a Snowflake database](#2.Connecting-dbt-to-a-Snowflake-database)
-- [3.Admins vs Developers](#3.Admins-vs-Developers)
-- [4.Connecting dbt to a Snowflake database](#4.Connecting-dbt-to-a-Snowflake-database)
-- [5.Admins vs Developers](#5.Admins-vs-Developers)
-- [6.Deploying a Production Environment](#6.Deploying-a-Production-Environment)
-- [7.Building Models](#7.Building-Models)
-- [8.Referencing Sources](#8.Referencing-Sources)
-- [9.Testing](#9.Testing)
-- [10.DBT Build Command](#10.DBT-Build-Command)
-- [11.Documentation](#11.Documentation)
-- [11.Deployment](#11.Deployment)
+- [1.Snowflake Setup](#Snowflake-Setup)
+- [2.Connecting dbt to a Snowflake database](#Connecting-dbt-to-a-Snowflake-database)
+- [3.Admins vs Developers](#Admins-vs-Developers)
+- [4.Connecting dbt to a Snowflake database](#Connecting-dbt-to-a-Snowflake-database)
+- [5.Admins vs Developers](#Admins-vs-Developers)
+- [6.Deploying a Production Environment](#Deploying-a-Production-Environment)
+- [7.Building Models](#Building-Models)
+- [8.Referencing Sources](#Referencing-Sources)
+- [9.Testing](#Testing)
+- [10.DBT Build Command](#DBT-Build-Command)
+- [11.Documentation](#Documentation)
+- [12.Deployment](#Deployment)
 
 
 
